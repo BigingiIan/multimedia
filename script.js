@@ -1,49 +1,36 @@
-/* =========================================
-   Save Our Wildlife — script.js
-   Q4: Toggle button logic (hide / play)
-   ========================================= */
-
 (function () {
   'use strict';
 
-  /* --- DOM References --- */
-  const video     = document.getElementById('wildlife-video');
-  const toggleBtn = document.getElementById('btn-toggle');
-  const btnLabel  = document.getElementById('btn-label');
-  const btnIcon   = document.getElementById('btn-icon');
-  const statusMsg = document.getElementById('btn-status');
+  var video     = document.getElementById('wildlife-video');
+  var toggleBtn = document.getElementById('btn-toggle');
+  var btnLabel  = document.getElementById('btn-label');
+  var btnIcon   = document.getElementById('btn-icon');
+  var statusMsg = document.getElementById('btn-status');
 
-  /* Guard: exit silently if elements are missing */
   if (!video || !toggleBtn) return;
 
-  /* --- Helper: is the video currently playing? --- */
   function isPlaying() {
     return !video.paused && !video.ended && video.readyState > 2;
   }
 
-  /* --- Helper: is the video currently hidden? --- */
   function isHidden() {
     return video.classList.contains('is-hidden');
   }
 
-  /* --- Update button label and aria state --- */
   function syncButtonUI() {
     if (isHidden()) {
-      /* Video is hidden → button will show & play */
       btnIcon.textContent  = '▶';
       btnLabel.textContent = 'Play Video';
       toggleBtn.setAttribute('aria-label', 'Show and play the wildlife video');
       toggleBtn.setAttribute('aria-pressed', 'false');
       statusMsg.textContent = 'Video hidden';
     } else if (isPlaying()) {
-      /* Video is playing → button will hide */
       btnIcon.textContent  = '⊗';
       btnLabel.textContent = 'Hide Video';
       toggleBtn.setAttribute('aria-label', 'Pause and hide the wildlife video');
       toggleBtn.setAttribute('aria-pressed', 'true');
       statusMsg.textContent = 'Now playing';
     } else {
-      /* Video visible but paused → button will play */
       btnIcon.textContent  = '▶';
       btnLabel.textContent = 'Play Video';
       toggleBtn.setAttribute('aria-label', 'Play the wildlife video');
@@ -52,23 +39,15 @@
     }
   }
 
-  /* --- Core Toggle Logic (Q4 requirement) ---
-       • If the video IS playing  → pause it and hide it
-       • If the video is NOT playing (paused or hidden) → show it and play it
-  ------------------------------------------- */
   function handleToggle() {
     if (isPlaying()) {
-      /* Video is playing → hide it */
       video.pause();
       video.classList.add('is-hidden');
-      /*  Notify screen readers */
       video.setAttribute('aria-hidden', 'true');
     } else {
-      /* Video is not playing (paused or hidden) → show & play */
       video.classList.remove('is-hidden');
       video.removeAttribute('aria-hidden');
       video.play().catch(function (err) {
-        /* Autoplay may be blocked by browser policy; inform user */
         console.warn('Playback prevented by browser:', err);
         statusMsg.textContent = 'Press play on the video';
       });
@@ -77,17 +56,65 @@
     syncButtonUI();
   }
 
-  /* --- Event Listeners --- */
   toggleBtn.addEventListener('click', handleToggle);
 
-  /* Keep button label in sync with native video controls */
-  video.addEventListener('play',   syncButtonUI);
-  video.addEventListener('pause',  syncButtonUI);
-  video.addEventListener('ended',  syncButtonUI);
+  video.addEventListener('play',  syncButtonUI);
+  video.addEventListener('pause', syncButtonUI);
+  video.addEventListener('ended', syncButtonUI);
 
-  /* --- Keyboard: Space / Enter already fire click; nothing extra needed --- */
-
-  /* --- Initial state --- */
   syncButtonUI();
+
+  var canvas = document.getElementById('particle-canvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var particles = [];
+  var PARTICLE_COUNT = 35;
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function createParticle() {
+    return {
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 3 + 1,
+      dx: (Math.random() - 0.5) * 0.4,
+      dy: -Math.random() * 0.3 - 0.1,
+      alpha: Math.random() * 0.35 + 0.1,
+      color: Math.random() > 0.5 ? '61,122,79' : '212,168,83'
+    };
+  }
+
+  for (var i = 0; i < PARTICLE_COUNT; i++) {
+    particles.push(createParticle());
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      p.x += p.dx;
+      p.y += p.dy;
+
+      if (p.y + p.r < 0) {
+        p.y = canvas.height + p.r;
+        p.x = Math.random() * canvas.width;
+      }
+      if (p.x < -p.r) p.x = canvas.width + p.r;
+      if (p.x > canvas.width + p.r) p.x = -p.r;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(' + p.color + ',' + p.alpha + ')';
+      ctx.fill();
+    }
+    requestAnimationFrame(animate);
+  }
+
+  animate();
 
 })();
