@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Q5: Responsive viewport meta tag -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+        content="Save Our Wildlife — a campaign to protect endangered species and natural habitats worldwide." />
+
+  <title>Save Our Wildlife</title>
+
+  <!-- Q5: External CSS (responsive + accessible styles) -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Accessibility: skip navigation link for keyboard users -->
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <!-- =========================================
+       HEADER — Q1: Heading "Save Our Wildlife"
+       ========================================= -->
+  <header class="site-header" role="banner">
+    <p class="site-header__eyebrow" aria-hidden="true">Conservation Campaign</p>
+    <!-- Q1: Main heading (2 marks) -->
+    <h1 class="site-header__title">Save Our Wildlife</h1>
+  </header>
+
+  <!-- =========================================
+       MAIN CONTENT
+       ========================================= -->
+  <main id="main-content" class="page-wrapper">
+
+    <!-- Video section -->
+    <section aria-labelledby="video-section-title">
+      <!-- Visually-hidden section label for screen readers -->
+      <h2 id="video-section-title" class="sr-only"
+          style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">
+        Wildlife video player
+      </h2>
+
+      <div class="video-card">
+
+        <!-- Q2: Video element with playback controls (4 marks)
+             - src points to wildlife.mp4
+             - controls attribute provides native playback controls
+             - preload="metadata" for performance (loads dimensions/duration only)
+             - poster: shown before playback (good practice)
+             - aria-label: describes video for screen readers
+             - type declared for browser compatibility
+        -->
+        <video
+          id="wildlife-video"
+          class="wildlife-video"
+          controls
+          preload="metadata"
+          aria-label="Wildlife conservation video showing endangered species in their natural habitat"
+        >
+          <source src="wildlife.mp4" type="video/mp4" />
+          <!-- Accessibility: fallback text if browser can't play the video -->
+          <p>
+            Your browser does not support HTML5 video.
+            <a href="wildlife.mp4" download>Download the video</a> instead.
+          </p>
+        </video>
+
+        <!-- Controls row -->
+        <div class="video-controls" role="group" aria-label="Video playback controls">
+
+          <!-- Q4: Toggle button — hides video if playing, plays it if not (3 marks)
+               - aria-pressed reflects current toggle state (updated by JS)
+               - aria-label is updated dynamically by JS
+               - role="button" is implicit on <button>; no extra role needed
+          -->
+          <button
+            id="btn-toggle"
+            class="btn-toggle"
+            type="button"
+            aria-label="Play the wildlife video"
+            aria-pressed="false"
+          >
+            <span id="btn-icon"   class="btn-toggle__icon" aria-hidden="true">▶</span>
+            <span id="btn-label">Play Video</span>
+          </button>
+
+          <!-- Live region: announces state changes to screen readers -->
+          <span
+            id="btn-status"
+            class="btn-status"
+            aria-live="polite"
+            aria-atomic="true"
+          >Paused</span>
+
+        </div><!-- /.video-controls -->
+
+        <!-- Q3: Short description below the video (2 marks) -->
+        <div class="video-description" role="complementary" aria-label="Video description">
+          <p class="video-description__text">
+            <strong>Every species matters.</strong>
+            Across the world, habitat loss and climate change are pushing thousands of animals
+            toward extinction. This video highlights the beauty of our planet's wildlife and
+            the urgent need to protect it — for generations to come. Join our campaign today
+            and help us make a difference.
+          </p>
+        </div>
+
+      </div><!-- /.video-card -->
+
+    </section>
+
+  </main><!-- /#main-content -->
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <p>&copy; 2025 Save Our Wildlife Conservation Organisation. All rights reserved.</p>
+  </footer>
+
+  <!-- Q4 / Q5: External JS (deferred so DOM is ready before it runs) -->
+  <script src="script.js" defer></script>
+
+</body>
+</html>
